@@ -17,4 +17,7 @@ class LibrarySpider(scrapy.Spider):
             
     def parse_book(self, response, **kwargs):
         book_name = response.css('div.product_main h1::text').get().strip()
-        print(book_name)
+        book_price = response.css('p.price_color::text').get().strip()
+        book_image = response.css('div.carousel-inner img::attr(src)').get()
+        book_description = response.xpath('/html/body/div/div/div[2]/div[2]/article/p/text()').get()
+        book_upc = response.xpath('/html/body/div/div/div[2]/div[2]/article/table/tbody/tr[1]/td')
