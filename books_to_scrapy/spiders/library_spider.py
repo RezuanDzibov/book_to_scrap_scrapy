@@ -10,8 +10,11 @@ class LibrarySpider(scrapy.Spider):
         books = response.css('article.product_pod').getall()
         for book in books:
             book = Selector(text=book)
-            book_name = book.css('h3')
-            book_name = book_name.css('a::text').get()
-            print(book_name)
+            book_link = book.css('h3 a::attr(href)')[0]
+            yield response.follow(book_link, self.parse_book)
         for next_page in response.css('li.next a::attr(href)'):
             yield response.follow(next_page, self.parse)
+            
+    def parse_book(self, response, **kwargs):
+        book_name = response.css('div.product_main h1::text').get().strip()
+        print(book_name)
