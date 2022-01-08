@@ -13,3 +13,5 @@ class LibrarySpider(scrapy.Spider):
             book_name = book.css('h3')
             book_name = book_name.css('a::text').get()
             print(book_name)
+        for next_page in response.css('li.next a::attr(href)'):
+            yield response.follow(next_page, self.parse)
