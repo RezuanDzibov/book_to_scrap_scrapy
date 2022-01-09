@@ -9,3 +9,4 @@ class BookItem(scrapy.Item):
     upc = scrapy.Field()
     tax = scrapy.Field()
     availability = scrapy.Field()
+    star_rating = scrapy.Field()
