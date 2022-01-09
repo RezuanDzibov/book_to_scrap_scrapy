@@ -1,6 +1,8 @@
 import scrapy
 from scrapy import Selector
 
+from books_to_scrapy.items import BookItem
+
 
 class LibrarySpider(scrapy.Spider):
     name = 'books_to_scrap'
@@ -16,8 +18,13 @@ class LibrarySpider(scrapy.Spider):
             yield response.follow(next_page, self.parse)
             
     def parse_book(self, response, **kwargs):
-        book_name = response.css('div.product_main h1::text').get().strip()
-        book_price = response.css('p.price_color::text').get().strip()
-        book_image = response.css('div.carousel-inner img::attr(src)').get()
-        book_description = response.xpath('/html/body/div/div/div[2]/div[2]/article/p/text()').get()
-        book_upc = response.xpath('/html/body/div/div/div[2]/div[2]/article/table/tbody/tr[1]/td')
+        item = BookItem()
+        item['name'] = response.css('div.product_main h1::text').get().strip()
+        item['price'] = response.css('p.price_color::text').get().strip()
+        item['image'] = response.urljoin(response.css('div.carousel-inner img::attr(src)').get())
+        item['description'] = response.xpath('/html/body/div/div/div[2]/div[2]/article/p/text()').get()
+        book_table_content = response.css('table td::text').getall()
+        item['upc'] = book_table_content[0]
+        item['tax'] = book_table_content[4]
+        item['availability'] = book_table_content[5]
+        yield item
